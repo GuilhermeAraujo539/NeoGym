@@ -1,9 +1,5 @@
 # NeoGym
 
-**Integrantes:**  
-- Guilherme de Araujo Souza  
-- Diovanni Lucas Soares de Paula
-
 **NeoGym** é uma plataforma digital voltada para o ecossistema fitness, conectando alunos, personal trainers, nutricionistas e academias em um único ambiente integrado. O objetivo é oferecer uma solução segura, confiável e estruturada, permitindo que usuários encontrem profissionais credenciados dentro da academia onde treinam, acompanhem treinos, agendem sessões e interajam via chat. Este projeto serve como **Trabalho de Conclusão de Curso (TCC)** e também como **projeto de portfólio público**, demonstrando arquitetura moderna e boas práticas de desenvolvimento.
 
 ## Objetivo do Projeto
@@ -105,6 +101,11 @@ Para garantir a confiabilidade do sistema, o NeoGym implementa validação profi
 - [ ] Funcionalidades de chat e agenda  
 - [ ] Validação de credenciais e fluxo administrativo  
 
+## Integrantes
+
+- Guilherme de Araujo Souza  
+- Diovanni Lucas Soares de Paula
+
 ## Licença
 
-Projeto acadêmico desenvolvido para fins educacionais.
+Projeto acadêmico desenvolvido para fins educacionais e portfólio público.
