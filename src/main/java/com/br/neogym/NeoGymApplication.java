@@ -1,4 +1,4 @@
-package com.br.NeoGym;
+package com.br.neogym;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

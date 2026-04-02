@@ -1,4 +1,4 @@
-package com.br.NeoGym;
+package com.br.neogym;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

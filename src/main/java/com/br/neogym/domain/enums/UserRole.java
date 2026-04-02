@@ -1,4 +1,4 @@
-package com.br.neogym.aplication.enums;
+package com.br.neogym.domain.enums;
 
 public enum UserRole {
     Student,
