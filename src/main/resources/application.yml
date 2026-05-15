@@ -1,8 +1,11 @@
 spring:
+  config:
+    import: optional:file:.env
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/neogym
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -11,8 +14,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
-    show-sql: false
+      ddl-auto: update
+    show-sql: true
     open-in-view: false
     properties:
       hibernate:
@@ -21,24 +24,13 @@ spring:
 
   jackson:
     default-property-inclusion: non_null
-    serialization:
-      write-dates-as-timestamps: false
-
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
 
 server:
-  port: 8080
-  error:
-    include-message: never
-    include-binding-errors: never
-    include-stacktrace: never
+  port: ${SERVER_PORT:8080}
 
 neogym:
   jwt:
-    secret: ${JWT_SECRET:neogym-super-secret-key-must-be-at-least-256-bits-long-ok}
+    secret: ${JWT_SECRET}
     access-token-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
     refresh-token-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
 
@@ -46,4 +38,4 @@ logging:
   level:
     com.neogym: DEBUG
     org.springframework.security: INFO
-    org.hibernate.SQL: OFF
+    org.hibernate.SQL: INFO
