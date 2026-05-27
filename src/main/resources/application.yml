@@ -34,8 +34,13 @@ neogym:
     access-token-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
     refresh-token-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
 
+  storage:
+    base-path: ${STORAGE_PATH:uploads}
+    base-url: ${STORAGE_BASE_URL:http://localhost:8080/arquivos}
+
 logging:
   level:
     com.neogym: DEBUG
     org.springframework.security: INFO
     org.hibernate.SQL: INFO
+

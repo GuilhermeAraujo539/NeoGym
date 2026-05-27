@@ -25,7 +25,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -33,7 +32,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailsServiceImpl  userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,19 +40,45 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
-                        // ── Endpoints públicos de auth ──────────────────────────
+
+                        // ───────── AUTH PÚBLICA ─────────
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/cadastro/aluno").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/cadastro/personal").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/cadastro/nutricionista").permitAll()
-                        // ── Health check ────────────────────────────────────────
+
+                        // ───────── HEALTH ─────────
                         .requestMatchers("/actuator/health").permitAll()
-                        // ── Tudo mais requer token válido ────────────────────────
+
+                        // ───────── CREDENCIAIS ─────────
+                        .requestMatchers(HttpMethod.POST, "/api/v1/credenciais")
+                        .hasAnyRole("PERSONAL", "NUTRICIONISTA")
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/credenciais/minhas")
+                        .hasAnyRole("PERSONAL", "NUTRICIONISTA")
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/credenciais")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/credenciais/*/avaliar")
+                        .hasRole("ADMIN")
+
+                        // ───────── ADMIN ─────────
+                        .requestMatchers("/api/v1/admin/**")
+                        .hasRole("ADMIN")
+
+                        // ───────── ARQUIVOS ─────────
+                        .requestMatchers("/arquivos/**")
+                        .authenticated()
+
+                        // ───────── TUDO MAIS ─────────
                         .anyRequest().authenticated()
                 )
+
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -72,11 +97,6 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    /**
-     * BCrypt com custo 12.
-     * Custo 10 = ~100ms | Custo 12 = ~400ms | Custo 14 = ~1.5s por hash.
-     * Custo 12 é recomendado para produção (2024+).
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
@@ -85,7 +105,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // Em produção, substitua "*" pelas origens reais do seu app Flutter/React
         config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
@@ -95,5 +114,18 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public org.springframework.web.servlet.config.annotation.WebMvcConfigurer staticResourceConfigurer() {
+        return new org.springframework.web.servlet.config.annotation.WebMvcConfigurer() {
+            @Override
+            public void addResourceHandlers(
+                    org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+
+                registry.addResourceHandler("/arquivos/**")
+                        .addResourceLocations("file:uploads/");
+            }
+        };
     }
 }
