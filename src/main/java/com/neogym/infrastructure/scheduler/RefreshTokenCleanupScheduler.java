@@ -13,7 +13,6 @@ public class RefreshTokenCleanupScheduler {
 
     private final RefreshTokenRepositoryPort refreshTokenRepository;
 
-    // Toda madrugada às 03:00
     @Scheduled(cron = "0 0 3 * * *")
     public void limparTokensExpirados() {
         log.info("Iniciando limpeza de refresh tokens expirados...");

@@ -21,20 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * Controller de credenciais.
- *
- * ROTAS:
- * POST   /api/v1/credenciais                     → profissional envia documento
- * GET    /api/v1/credenciais                     → admin lista todas (com filtro)
- * GET    /api/v1/credenciais/minhas              → profissional vê sua própria
- * PATCH  /api/v1/credenciais/{id}/avaliar        → admin aprova ou rejeita
- *
- * SEGURANÇA:
- * – Upload: apenas PERSONAL e NUTRICIONISTA
- * – Listar/Avaliar: apenas ADMIN
- * – Cada profissional só vê sua própria credencial
- */
+
 @RestController
 @RequestMapping("/api/v1/credenciais")
 @RequiredArgsConstructor

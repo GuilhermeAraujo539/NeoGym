@@ -18,5 +18,5 @@ public class AtualizarUsuarioAdminRequest {
     @Size(max = 120)
     private String email;
 
-    private Boolean ativo; // ativar ou desativar conta
+    private Boolean ativo;
 }

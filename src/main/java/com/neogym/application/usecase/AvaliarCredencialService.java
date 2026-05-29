@@ -18,13 +18,7 @@ import com.neogym.domain.exception.UsuarioNaoEncontradoException;
 
 import java.time.LocalDateTime;
 
-/**
- * Caso de uso: admin avalia uma credencial (APROVADO ou REJEITADO).
- *
- * Ao aprovar, sincroniza o status no perfil de Personal ou Nutricionista,
- * tornando o profissional visível nas buscas.
- * Ao rejeitar, registra a observação para que o profissional saiba o motivo.
- */
+
 public class AvaliarCredencialService {
 
     private final CredencialRepositoryPort    credencialRepository;
@@ -79,7 +73,6 @@ public class AvaliarCredencialService {
 
         credencialRepository.salvar(atualizada);
 
-        // Sincroniza o status no perfil do profissional
         sincronizarStatusProfissional(credencial.getUsuarioId(),
                 credencial.getTipo(), req.getStatus());
 

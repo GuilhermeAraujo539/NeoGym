@@ -30,7 +30,6 @@ public class GerenciarUsuarioAdminService {
                     "Não é permitido alterar contas de outros administradores.");
         }
 
-        // Desativação: revoga todos os tokens da sessão imediatamente
         if (req.getAtivo() != null && !req.getAtivo()) {
             refreshTokenRepository.revogarTodosPorUsuarioId(usuarioId);
         }
@@ -64,7 +63,6 @@ public class GerenciarUsuarioAdminService {
                     "Você não pode deletar sua própria conta.");
         }
 
-        // Revoga todas as sessões antes de deletar
         refreshTokenRepository.revogarTodosPorUsuarioId(usuarioId);
         usuarioRepository.deletar(usuarioId);
     }

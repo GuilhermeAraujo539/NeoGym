@@ -43,7 +43,6 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // ───────── AUTH PÚBLICA ─────────
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
@@ -51,10 +50,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/cadastro/personal").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/cadastro/nutricionista").permitAll()
 
-                        // ───────── HEALTH ─────────
                         .requestMatchers("/actuator/health").permitAll()
 
-                        // ───────── CREDENCIAIS ─────────
                         .requestMatchers(HttpMethod.POST, "/api/v1/credenciais")
                         .hasAnyRole("PERSONAL", "NUTRICIONISTA")
 
@@ -67,15 +64,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/credenciais/*/avaliar")
                         .hasRole("ADMIN")
 
-                        // ───────── ADMIN ─────────
                         .requestMatchers("/api/v1/admin/**")
                         .hasRole("ADMIN")
 
-                        // ───────── ARQUIVOS ─────────
                         .requestMatchers("/arquivos/**")
                         .authenticated()
 
-                        // ───────── TUDO MAIS ─────────
                         .anyRequest().authenticated()
                 )
 

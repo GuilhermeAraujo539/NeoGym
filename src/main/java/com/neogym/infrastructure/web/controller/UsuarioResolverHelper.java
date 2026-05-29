@@ -5,10 +5,7 @@ import com.neogym.domain.exception.UsuarioNaoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/**
- * Helper que resolve e-mail (extraído do JWT) para Long id.
- * Compartilhado entre controllers que precisam do usuário logado.
- */
+
 @Component
 @RequiredArgsConstructor
 public class UsuarioResolverHelper {

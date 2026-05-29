@@ -16,10 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Caso de uso: envio de documento de credencial pelo profissional.
- * Puro Java — zero imports de Spring/Jakarta além de MultipartFile (necessário para upload).
- */
 public class EnviarCredencialService {
 
     private static final long   MAX_TAMANHO_BYTES = 10 * 1024 * 1024; // 10MB
@@ -49,7 +45,6 @@ public class EnviarCredencialService {
             throw new OperacaoNaoPermitidaException("Apenas profissionais podem enviar credenciais.");
         }
 
-        // Remove credencial anterior se existir (reenvio)
         credencialRepository.buscarPorUsuarioId(usuarioId).ifPresent(c -> {
             if (c.getArquivoUrl() != null) {
                 fileStorage.remover(c.getArquivoUrl());

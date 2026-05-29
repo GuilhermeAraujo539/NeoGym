@@ -51,7 +51,6 @@ public class LocalFileStorageAdapter implements FileStoragePort {
         try {
             String caminho = url.replace(baseUrl, basePath);
             Path path = Paths.get(caminho).toAbsolutePath().normalize();
-            // Garante que o caminho está dentro do basePath (previne path traversal)
             if (!path.startsWith(Paths.get(basePath).toAbsolutePath())) {
                 log.warn("Tentativa de remover arquivo fora do diretório base: {}", url);
                 return;

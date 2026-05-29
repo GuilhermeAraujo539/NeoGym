@@ -30,7 +30,7 @@ public class SecureHashAdapter implements HashPort {
 
     @Override
     public String gerarTokenAleatorio() {
-        byte[] bytes = new byte[32]; // 256 bits
+        byte[] bytes = new byte[32];
         SECURE_RANDOM.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }

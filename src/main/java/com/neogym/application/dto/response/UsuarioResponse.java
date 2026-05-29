@@ -6,10 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * DTO de resposta para dados de usuário.
- * Nunca expõe senhaHash.
- */
 @Getter
 @Builder
 public class UsuarioResponse {

@@ -40,23 +40,11 @@ public class AdminController {
     private final ListarUsuariosAdminService listarUsuariosService;
     private final UsuarioResolverHelper      usuarioResolver;
 
-    // ── Dashboard ──────────────────────────────────────────────────────────
-
-    /**
-     * GET /api/v1/admin/dashboard
-     * Retorna totais: usuários por tipo, credenciais por status, vínculos pendentes.
-     */
     @GetMapping("/dashboard")
     public ResponseEntity<DashboardAdminResponse> dashboard() {
         return ResponseEntity.ok(dashboardService.executar());
     }
 
-    // ── Usuários ───────────────────────────────────────────────────────────
-
-    /**
-     * GET /api/v1/admin/usuarios?tipo=PERSONAL&ativo=true&pagina=0&tamanho=20
-     * Lista usuários com filtros opcionais de tipo e status.
-     */
     @GetMapping("/usuarios")
     public ResponseEntity<PageResponse<UsuarioResponse>> listarUsuarios(
             @RequestParam(required = false) TipoUsuario tipo,
@@ -74,20 +62,11 @@ public class AdminController {
                 tipo, ativo, PageRequest.of(pagina, tamanho, sort)));
     }
 
-    /**
-     * GET /api/v1/admin/usuarios/{id}
-     * Retorna detalhes completos de um usuário específico.
-     */
     @GetMapping("/usuarios/{id}")
     public ResponseEntity<UsuarioResponse> buscarUsuario(@PathVariable Long id) {
         return ResponseEntity.ok(listarUsuariosService.buscarPorId(id));
     }
 
-    /**
-     * PATCH /api/v1/admin/usuarios/{id}
-     * Atualiza nome, e-mail ou status ativo/inativo.
-     * Desativar revoga todas as sessões do usuário imediatamente.
-     */
     @PatchMapping("/usuarios/{id}")
     public ResponseEntity<UsuarioResponse> atualizarUsuario(
             @PathVariable Long id,
@@ -99,11 +78,6 @@ public class AdminController {
                 gerenciarUsuarioService.atualizarUsuario(id, adminId, request));
     }
 
-    /**
-     * DELETE /api/v1/admin/usuarios/{id}
-     * Deleta permanentemente um usuário (não admins).
-     * Revoga todas as sessões antes de deletar.
-     */
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<Void> deletarUsuario(
             @PathVariable Long id,

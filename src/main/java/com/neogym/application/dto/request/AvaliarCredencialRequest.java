@@ -13,8 +13,8 @@ import lombok.extern.jackson.Jacksonized;
 public class AvaliarCredencialRequest {
 
     @NotNull(message = "Status é obrigatório")
-    private StatusCredencial status; // APROVADO ou REJEITADO
+    private StatusCredencial status;
 
     @Size(max = 500, message = "Observação deve ter no máximo 500 caracteres")
-    private String observacao; // obrigatória se REJEITADO
+    private String observacao;
 }

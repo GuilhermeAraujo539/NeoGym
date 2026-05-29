@@ -21,7 +21,6 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ── Validação de campos (@Valid) ──────────────────────────────────────────
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
@@ -36,7 +35,6 @@ public class GlobalExceptionHandler {
                 "Verifique os campos informados.", campos);
     }
 
-    // ── Exceções de negócio ──────────────────────────────────────────────────
 
     @ExceptionHandler(UsuarioJaExisteException.class)
     public ResponseEntity<ApiError> handleUsuarioJaExiste(UsuarioJaExisteException ex) {
@@ -45,7 +43,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CredenciaisInvalidasException.class)
     public ResponseEntity<ApiError> handleCredenciaisInvalidas(CredenciaisInvalidasException ex) {
-        // Não revelamos se o e-mail existe — mensagem genérica intencional
         return build(HttpStatus.UNAUTHORIZED, "Não autorizado", ex.getMessage(), null);
     }
 
@@ -69,7 +66,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, "Não encontrado", ex.getMessage(), null);
     }
 
-    // ── Spring Security ──────────────────────────────────────────────────────
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex) {
@@ -83,15 +79,11 @@ public class GlobalExceptionHandler {
                 "Você não tem permissão para acessar este recurso.", null);
     }
 
-    // ── Erros de tipo/parâmetro ──────────────────────────────────────────────
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String msg = "Parâmetro '%s' com valor inválido: '%s'".formatted(ex.getName(), ex.getValue());
         return build(HttpStatus.BAD_REQUEST, "Parâmetro inválido", msg, null);
     }
-
-    // ── Catch-all ────────────────────────────────────────────────────────────
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex) {
@@ -99,8 +91,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno",
                 "Ocorreu um erro inesperado. Tente novamente mais tarde.", null);
     }
-
-    // ── Helper ───────────────────────────────────────────────────────────────
 
     private ResponseEntity<ApiError> build(
             HttpStatus status, String erro, String mensagem,

@@ -19,7 +19,6 @@ public class ListarCredenciaisService {
         this.usuarioRepository    = usuarioRepository;
     }
 
-    /** Admin: lista todas as credenciais ou filtra por status. */
     public PageResponse<CredencialResponse> listarPorStatus(StatusCredencial status,
                                                             Pageable pageable) {
         Page<CredencialResponse> page = (status != null
@@ -33,7 +32,6 @@ public class ListarCredenciaisService {
         return toPageResponse(page);
     }
 
-    /** Profissional: lista apenas suas próprias credenciais. */
     public PageResponse<CredencialResponse> listarPorUsuario(Long usuarioId,
                                                              Pageable pageable) {
         Page<CredencialResponse> page = credencialRepository
