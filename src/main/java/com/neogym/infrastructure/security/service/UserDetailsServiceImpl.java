@@ -3,7 +3,6 @@ package com.neogym.infrastructure.security.service;
 import com.neogym.infrastructure.persistence.repository.UsuarioJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,17 +19,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email)
+            throws UsernameNotFoundException {
+
         return usuarioJpaRepository.findByEmail(email)
-                .map(u -> new User(
+                .map(u -> new AuthenticatedUser(
+                        u.getId(),
+                        u.getNome(),
                         u.getEmail(),
                         u.getSenhaHash(),
                         u.isAtivo(),
-                        true,
-                        true,
-                        true,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + u.getTipo()))
+                        List.of(
+                                new SimpleGrantedAuthority(
+                                        "ROLE_" + u.getTipo()
+                                )
+                        )
                 ))
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "Usuário não encontrado: " + email
+                        )
+                );
     }
 }

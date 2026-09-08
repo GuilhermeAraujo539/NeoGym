@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:file:.env
+    import: "optional:file:./.env[.properties]"
 
   datasource:
     url: ${DB_URL}
@@ -33,6 +33,9 @@ neogym:
     secret: ${JWT_SECRET}
     access-token-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
     refresh-token-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+
+gemini:
+  api-key: ${GEMINI_API_KEY}
 
 logging:
   level:
