@@ -5,7 +5,7 @@ import com.neogym.application.usecase.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.neogym.infrastructure.ai.MockGeradorTreinoIAAdapter;
+
 
 @Configuration
 public class UseCaseConfig {
@@ -69,20 +69,4 @@ public class UseCaseConfig {
             HashPort                   hashPort) {
         return new LogoutService(refreshTokenRepository, hashPort);
     }
-    @Bean
-    public GerarTreinoIAService gerarTreinoIAService(
-            GeradorTreinoIAPort geradorTreinoIAPort,
-            PersonalRepositoryPort personalRepository,
-            AlunoRepositoryPort alunoRepository,
-            PersonalAlunoRepositoryPort personalAlunoRepository) {
-
-        return new GerarTreinoIAService(
-                geradorTreinoIAPort,
-                personalRepository,
-                alunoRepository,
-                personalAlunoRepository
-        );
-    }
-
-
 }
