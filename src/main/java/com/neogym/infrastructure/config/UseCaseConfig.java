@@ -1,5 +1,6 @@
 package com.neogym.infrastructure.config;
 
+import com.neogym.application.port.in.SolicitarVinculoUseCase;
 import com.neogym.application.port.out.*;
 import com.neogym.application.usecase.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,5 +85,15 @@ public class UseCaseConfig {
         );
     }
 
+    @Bean
+    public SolicitarVinculoUseCase solicitarVinculoUseCase(
+            VinculoProfissionalRepositoryPort vinculoRepository,
+            UsuarioRepositoryPort usuarioRepository
+    ) {
+        return new SolicitarVinculoService(
+                vinculoRepository,
+                usuarioRepository
+        );
+    }
 
 }

@@ -42,16 +42,18 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // ── Endpoints públicos de auth ──────────────────────────
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/cadastro/aluno").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/cadastro/personal").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/cadastro/nutricionista").permitAll()
-                        // ── Health check ────────────────────────────────────────
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/profissionais/proximos")
+                        .authenticated()
+
                         .requestMatchers("/actuator/health").permitAll()
-                        // ── Tudo mais requer token válido ────────────────────────
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

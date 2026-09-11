@@ -11,4 +11,7 @@ public interface AlunoJpaRepository extends JpaRepository<AlunoJpaEntity, Long> 
 
     @Query("SELECT a FROM AlunoJpaEntity a WHERE a.usuario.id = :usuarioId")
     Optional<AlunoJpaEntity> findByUsuarioId(@Param("usuarioId") Long usuarioId);
+
+
 }
+

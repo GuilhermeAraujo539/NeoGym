@@ -36,6 +36,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.openai</groupId>
             <artifactId>openai-java</artifactId>
             <version>4.58.0</version>

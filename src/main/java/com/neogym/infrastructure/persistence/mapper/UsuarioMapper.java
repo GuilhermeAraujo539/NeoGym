@@ -10,12 +10,13 @@ public class UsuarioMapper {
 
     public Usuario toDomain(UsuarioJpaEntity e) {
         if (e == null) return null;
+
         return Usuario.builder()
                 .id(e.getId())
                 .nome(e.getNome())
                 .email(e.getEmail())
                 .senhaHash(e.getSenhaHash())
-                .tipo(TipoUsuario.valueOf(e.getTipo()))
+                .tipo(e.getTipo())
                 .ativo(e.isAtivo())
                 .criadoEm(e.getCriadoEm())
                 .build();
@@ -23,12 +24,13 @@ public class UsuarioMapper {
 
     public UsuarioJpaEntity toEntity(Usuario d) {
         if (d == null) return null;
+
         return UsuarioJpaEntity.builder()
                 .id(d.getId())
                 .nome(d.getNome())
                 .email(d.getEmail())
                 .senhaHash(d.getSenhaHash())
-                .tipo(d.getTipo().name())
+                .tipo(d.getTipo())
                 .ativo(d.isAtivo())
                 .criadoEm(d.getCriadoEm())
                 .build();
