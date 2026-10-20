@@ -50,6 +50,10 @@ public class BuscarProfissionaisProximosService
                 .distanciaKm(
                         Math.round(profissional.getDistanciaKm() * 100.0) / 100.0
                 )
+                .especialidade(profissional.getEspecialidade())
+                .apresentacao(profissional.getApresentacao())
+                .areasAtuacao(profissional.getAreasAtuacao())
+                .horariosDisponiveis(profissional.getHorariosDisponiveis())
                 .build();
     }
 }

@@ -259,7 +259,7 @@ CREATE TABLE refresh_token (
 -- FICHA DE TREINO
 -- ============================================================
 
-CREATE TABLE ficha_treino (
+CREATE TABLE personal_aluno (
                               id BIGSERIAL PRIMARY KEY,
 
                               aluno_id BIGINT NOT NULL,

@@ -2,6 +2,7 @@ package com.neogym.infrastructure.web.controller;
 
 import com.neogym.application.dto.request.SolicitarVinculoRequest;
 import com.neogym.application.dto.response.AlunoVinculadoResponse;
+import com.neogym.application.dto.response.ProfissionalVinculadoResponse;
 import com.neogym.application.dto.response.StatusVinculoResponse;
 import com.neogym.application.port.in.*;
 import com.neogym.domain.entity.VinculoProfissional;
@@ -21,6 +22,7 @@ public class VinculoProfissionalController {
     private final BuscarSolicitacoesVinculoUseCase buscarSolicitacoesVinculoUseCase;
     private final ResponderVinculoUseCase responderVinculoUseCase;
     private final BuscarAlunosVinculadosUseCase buscarAlunosVinculadosUseCase;
+    private final BuscarProfissionaisVinculadosUseCase buscarProfissionaisVinculadosUseCase;
     private final ConsultarStatusVinculoUseCase consultarStatusVinculoUseCase;
 
     @PostMapping
@@ -73,6 +75,14 @@ public class VinculoProfissionalController {
         return buscarAlunosVinculadosUseCase.executar(
                 authentication.getName()
         );
+    }
+
+    @GetMapping("/profissionais")
+    public List<ProfissionalVinculadoResponse> buscarProfissionaisVinculados(
+            Authentication authentication
+    ) {
+        return buscarProfissionaisVinculadosUseCase
+                .executar(authentication.getName());
     }
 
     @GetMapping("/status/{outroUsuarioId}")

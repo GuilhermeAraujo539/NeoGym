@@ -11,6 +11,7 @@ import com.neogym.infrastructure.persistence.repository.AlunoJpaRepository;
 import com.neogym.infrastructure.persistence.repository.UsuarioJpaRepository;
 import com.neogym.infrastructure.persistence.repository.VinculoProfissionalJpaRepository;
 import com.neogym.infrastructure.projection.AlunoVinculadoProjection;
+import com.neogym.infrastructure.projection.ProfissionalVinculadoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -122,11 +123,36 @@ public class VinculoProfissionalRepositoryAdapter
     }
 
     @Override
+    public Optional<VinculoProfissional> buscarVinculoAceito(
+            Long alunoId,
+            Long profissionalUsuarioId
+    ) {
+        return repository
+                .findByAluno_IdAndProfissional_IdAndStatus(
+                        alunoId,
+                        profissionalUsuarioId,
+                        StatusVinculo.ACEITO
+                )
+                .map(mapper::toDomain);
+    }
+
+
+    @Override
     public List<AlunoVinculadoProjection> buscarAlunosVinculados(
             Long profissionalUsuarioId
     ) {
         return repository.buscarAlunosVinculados(
                 profissionalUsuarioId,
+                StatusVinculo.ACEITO
+        );
+    }
+
+    @Override
+    public List<ProfissionalVinculadoProjection> buscarProfissionaisVinculados(
+            Long alunoUsuarioId
+    ) {
+        return repository.buscarProfissionaisVinculados(
+                alunoUsuarioId,
                 StatusVinculo.ACEITO
         );
     }

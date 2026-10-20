@@ -2,6 +2,7 @@ package com.neogym.application.port.out;
 
 import com.neogym.domain.entity.VinculoProfissional;
 import com.neogym.infrastructure.projection.AlunoVinculadoProjection;
+import com.neogym.infrastructure.projection.ProfissionalVinculadoProjection;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,15 @@ public interface VinculoProfissionalRepositoryPort {
     Optional<VinculoProfissional> buscarPorUsuarios(
             Long usuarioId,
             Long outroUsuarioId
+    );
+
+    Optional<VinculoProfissional> buscarVinculoAceito(
+            Long alunoId,
+            Long profissionalUsuarioId
+    );
+
+    List<ProfissionalVinculadoProjection> buscarProfissionaisVinculados(
+            Long alunoUsuarioId
     );
 
     VinculoProfissional atualizar(VinculoProfissional vinculo);

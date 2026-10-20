@@ -16,8 +16,13 @@ public class PersonalMapper {
                 .usuarioId(e.getUsuario().getId())
                 .cref(e.getCref())
                 .estadoCref(e.getEstadoCref())
-                .statusCref(StatusCredencial.valueOf(e.getStatusCref()))
+                .statusCref(e.getStatusCref())
+                .especialidade(e.getEspecialidade())
+                .apresentacao(e.getApresentacao())
+                .areasAtuacao(e.getAreasAtuacao())
+                .horariosDisponiveis(e.getHorariosDisponiveis())
                 .build();
+
     }
 
     public PersonalJpaEntity toEntity(Personal d, UsuarioJpaEntity usuario) {
@@ -27,7 +32,11 @@ public class PersonalMapper {
                 .usuario(usuario)
                 .cref(d.getCref())
                 .estadoCref(d.getEstadoCref())
-                .statusCref(d.getStatusCref().name())
+                .statusCref(d.getStatusCref())
+                .especialidade(d.getEspecialidade())
+                .apresentacao(d.getApresentacao())
+                .areasAtuacao(d.getAreasAtuacao())
+                .horariosDisponiveis(d.getHorariosDisponiveis())
                 .build();
     }
 }

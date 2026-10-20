@@ -9,6 +9,10 @@ public class Personal {
     private final String           cref;
     private final String           estadoCref;
     private final StatusCredencial statusCref;
+    private final String especialidade;
+    private final String apresentacao;
+    private final String areasAtuacao;
+    private final String horariosDisponiveis;
 
     private Personal(Builder b) {
         this.id         = b.id;
@@ -16,6 +20,26 @@ public class Personal {
         this.cref       = b.cref;
         this.estadoCref = b.estadoCref;
         this.statusCref = b.statusCref;
+        this.especialidade = b.especialidade;
+        this.apresentacao = b.apresentacao;
+        this.areasAtuacao = b.areasAtuacao;
+        this.horariosDisponiveis = b.horariosDisponiveis;
+    }
+
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public String getApresentacao() {
+        return apresentacao;
+    }
+
+    public String getAreasAtuacao() {
+        return areasAtuacao;
+    }
+
+    public String getHorariosDisponiveis() {
+        return horariosDisponiveis;
     }
 
     public Long             getId()         { return id; }
@@ -35,11 +59,37 @@ public class Personal {
         private String           estadoCref;
         private StatusCredencial statusCref;
 
+        private String especialidade = "";
+        private String apresentacao = "";
+        private String areasAtuacao = "";
+        private String horariosDisponiveis = "";
+
         public Builder id(Long id)                     { this.id = id; return this; }
         public Builder usuarioId(Long v)               { this.usuarioId = v; return this; }
         public Builder cref(String v)                  { this.cref = v; return this; }
         public Builder estadoCref(String v)            { this.estadoCref = v; return this; }
         public Builder statusCref(StatusCredencial v)  { this.statusCref = v; return this; }
+
+
+        public Builder especialidade(String v) {
+            this.especialidade = v;
+            return this;
+        }
+
+        public Builder apresentacao(String v) {
+            this.apresentacao = v;
+            return this;
+        }
+
+        public Builder areasAtuacao(String v) {
+            this.areasAtuacao = v;
+            return this;
+        }
+
+        public Builder horariosDisponiveis(String v) {
+            this.horariosDisponiveis = v;
+            return this;
+        }
 
         public Personal build() { return new Personal(this); }
     }

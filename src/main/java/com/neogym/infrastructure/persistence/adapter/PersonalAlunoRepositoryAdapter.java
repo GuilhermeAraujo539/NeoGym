@@ -18,7 +18,7 @@ public class PersonalAlunoRepositoryAdapter
         Number resultado = (Number) entityManager
                 .createNativeQuery("""
                 SELECT COUNT(*)
-                FROM ficha_treino
+                FROM personal_aluno
                 WHERE personal_id = ?1
                   AND aluno_id = ?2
                 """)

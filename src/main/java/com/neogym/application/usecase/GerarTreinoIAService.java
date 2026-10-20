@@ -5,26 +5,26 @@ import com.neogym.application.dto.response.TreinoIAResponse;
 import com.neogym.application.port.in.GerarTreinoIAUseCase;
 import com.neogym.application.port.out.AlunoRepositoryPort;
 import com.neogym.application.port.out.GeradorTreinoIAPort;
-import com.neogym.application.port.out.PersonalAlunoRepositoryPort;
 import com.neogym.application.port.out.PersonalRepositoryPort;
+import com.neogym.application.port.out.VinculoProfissionalRepositoryPort;
 
 public class GerarTreinoIAService implements GerarTreinoIAUseCase {
 
     private final GeradorTreinoIAPort geradorTreinoIAPort;
     private final PersonalRepositoryPort personalRepository;
     private final AlunoRepositoryPort alunoRepository;
-    private final PersonalAlunoRepositoryPort personalAlunoRepository;
+    private final VinculoProfissionalRepositoryPort vinculoRepository;
 
     public GerarTreinoIAService(
             GeradorTreinoIAPort geradorTreinoIAPort,
             PersonalRepositoryPort personalRepository,
             AlunoRepositoryPort alunoRepository,
-            PersonalAlunoRepositoryPort personalAlunoRepository) {
+            VinculoProfissionalRepositoryPort vinculoRepository) {
 
         this.geradorTreinoIAPort = geradorTreinoIAPort;
         this.personalRepository = personalRepository;
         this.alunoRepository = alunoRepository;
-        this.personalAlunoRepository = personalAlunoRepository;
+        this.vinculoRepository = vinculoRepository;
     }
 
     @Override
@@ -47,15 +47,16 @@ public class GerarTreinoIAService implements GerarTreinoIAUseCase {
                 .orElseThrow(() ->
                         new RuntimeException("Aluno não encontrado"));
 
-        boolean possuiVinculo =
-                personalAlunoRepository.existeVinculo(
-                        personal.getId(),
-                        request.getAlunoId());
-
-        if (!possuiVinculo) {
-            throw new RuntimeException(
-                    "Personal não possui vínculo com este aluno");
-        }
+        vinculoRepository
+                .buscarVinculoAceito(
+                        request.getAlunoId(),
+                        usuarioId
+                )
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Personal não possui vínculo com este aluno"
+                        )
+                );
 
         return geradorTreinoIAPort.gerar(request);
     }

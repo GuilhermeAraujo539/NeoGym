@@ -13,4 +13,12 @@ public interface ProfissionalProximoProjection {
     String getTipo();
 
     Double getDistanciaKm();
+
+    String getEspecialidade();
+
+    String getApresentacao();
+
+    String getAreasAtuacao();
+
+    String getHorariosDisponiveis();
 }

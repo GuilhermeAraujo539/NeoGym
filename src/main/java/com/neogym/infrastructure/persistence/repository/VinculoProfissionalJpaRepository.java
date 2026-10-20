@@ -3,6 +3,7 @@ package com.neogym.infrastructure.persistence.repository;
 import com.neogym.domain.enums.StatusVinculo;
 import com.neogym.infrastructure.persistence.entity.VinculoProfissionalJpaEntity;
 import com.neogym.infrastructure.projection.AlunoVinculadoProjection;
+import com.neogym.infrastructure.projection.ProfissionalVinculadoProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,6 +29,12 @@ public interface VinculoProfissionalJpaRepository
             StatusVinculo status
     );
 
+    Optional<VinculoProfissionalJpaEntity> findByAluno_IdAndProfissional_IdAndStatus(
+            Long alunoId,
+            Long profissionalUsuarioId,
+            StatusVinculo status
+    );
+
     Optional<VinculoProfissionalJpaEntity> findByIdAndProfissional_Id(
             Long id,
             Long profissionalId
@@ -50,6 +57,25 @@ public interface VinculoProfissionalJpaRepository
 """)
     List<AlunoVinculadoProjection> buscarAlunosVinculados(
             @Param("profissionalUsuarioId") Long profissionalUsuarioId,
+            @Param("status") StatusVinculo status
+    );
+
+
+    @Query("""
+    SELECT
+        v.id AS vinculoId,
+        u.id AS usuarioId,
+        u.nome AS nome,
+        u.email AS email
+    FROM VinculoProfissionalJpaEntity v
+    JOIN v.aluno a
+    JOIN v.profissional u
+    WHERE a.usuario.id = :alunoUsuarioId
+      AND v.status = :status
+    ORDER BY u.nome
+""")
+    List<ProfissionalVinculadoProjection> buscarProfissionaisVinculados(
+            @Param("alunoUsuarioId") Long alunoUsuarioId,
             @Param("status") StatusVinculo status
     );
 

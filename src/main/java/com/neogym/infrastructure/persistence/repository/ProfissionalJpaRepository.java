@@ -15,6 +15,10 @@ public interface ProfissionalJpaRepository
     SELECT
         p.id AS id,
         u.id AS usuarioId,
+        p.especialidade AS "especialidade",
+        p.apresentacao AS "apresentacao",
+        p.areas_atuacao AS "areasAtuacao",
+        p.horarios_disponiveis AS "horariosDisponiveis",
         u.nome AS nome,
         u.email AS email,
         'PERSONAL' AS tipo,
