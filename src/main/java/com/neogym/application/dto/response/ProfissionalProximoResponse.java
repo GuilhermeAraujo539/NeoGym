@@ -13,6 +13,10 @@ public class ProfissionalProximoResponse {
     private String email;
     private String tipo;
     private Double distanciaKm;
+
+    private Double lat;
+    private Double lng;
+
     private String especialidade;
     private String apresentacao;
     private String areasAtuacao;

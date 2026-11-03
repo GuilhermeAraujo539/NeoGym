@@ -1,6 +1,7 @@
 package com.neogym.infrastructure.config;
 
 import com.neogym.application.port.in.GerenciarCredenciaisAdminUseCase;
+import com.neogym.application.port.in.GerenciarUsuariosAdminUseCase;
 import com.neogym.application.port.in.ObterAdminDashboardUseCase;
 import com.neogym.application.port.in.SolicitarVinculoUseCase;
 import com.neogym.application.port.out.*;
@@ -27,18 +28,32 @@ public class UseCaseConfig {
 
     @Bean
     public CadastrarPersonalService cadastrarPersonalService(
-            UsuarioRepositoryPort  usuarioRepository,
+            UsuarioRepositoryPort usuarioRepository,
             PersonalRepositoryPort personalRepository,
-            PasswordEncoderPort    passwordEncoder) {
-        return new CadastrarPersonalService(usuarioRepository, personalRepository, passwordEncoder);
+            PasswordEncoderPort passwordEncoder,
+            CredencialRepositoryPort credencialRepository) {
+
+        return new CadastrarPersonalService(
+                usuarioRepository,
+                personalRepository,
+                passwordEncoder,
+                credencialRepository
+        );
     }
 
     @Bean
     public CadastrarNutricionistaService cadastrarNutricionistaService(
-            UsuarioRepositoryPort       usuarioRepository,
+            UsuarioRepositoryPort usuarioRepository,
             NutricionistaRepositoryPort nutricionistaRepository,
-            PasswordEncoderPort         passwordEncoder) {
-        return new CadastrarNutricionistaService(usuarioRepository, nutricionistaRepository, passwordEncoder);
+            PasswordEncoderPort passwordEncoder,
+            CredencialRepositoryPort credencialRepository) {
+
+        return new CadastrarNutricionistaService(
+                usuarioRepository,
+                nutricionistaRepository,
+                passwordEncoder,
+                credencialRepository
+        );
     }
 
     @Bean
@@ -179,11 +194,13 @@ public class UseCaseConfig {
     public GerenciarGaleriaProfissionalService
     gerenciarGaleriaProfissionalService(
             PersonalRepositoryPort personalRepository,
-            PersonalFotoRepositoryPort fotoRepository
+            PersonalFotoRepositoryPort fotoRepository,
+            NutricionistaRepositoryPort nutricionistaRepository
     ) {
         return new GerenciarGaleriaProfissionalService(
                 personalRepository,
-                fotoRepository
+                fotoRepository,
+                nutricionistaRepository
         );
     }
 
@@ -224,6 +241,13 @@ public class UseCaseConfig {
         return new GerenciarCredenciaisAdminUseCase(
                 credenciaisAdminPort
         );
+    }
+
+    @Bean
+    public GerenciarUsuariosAdminUseCase gerenciarUsuariosAdminUseCase(
+            AdminUsuariosPort adminUsuariosPort
+    ) {
+        return new GerenciarUsuariosAdminUseCase(adminUsuariosPort);
     }
 
     @Bean

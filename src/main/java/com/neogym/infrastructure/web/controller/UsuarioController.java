@@ -24,7 +24,6 @@ public class UsuarioController {
     private final AtualizarPerfilUseCase atualizarPerfilUseCase;
     private final UsuarioFotoRepositoryPort usuarioFotoRepository;
     private final AtualizarFotoPerfilUseCase atualizarFotoPerfilUseCase;
-    private final UsuarioFotoRepositoryPort fotoRepository;
 
     @PutMapping("/me")
     public ResponseEntity<PerfilResponse> atualizarPerfil(
@@ -66,6 +65,26 @@ public class UsuarioController {
         );
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{usuarioId}/foto")
+    public ResponseEntity<byte[]> buscarFotoPorUsuarioId(
+            @PathVariable Long usuarioId
+    ) {
+        return usuarioFotoRepository
+                .buscar(usuarioId)
+                .map(foto -> ResponseEntity
+                        .ok()
+                        .contentType(
+                                MediaType.parseMediaType(
+                                        foto.contentType()
+                                )
+                        )
+                        .body(foto.dados())
+                )
+                .orElseGet(() ->
+                        ResponseEntity.notFound().build()
+                );
     }
 
     @GetMapping("/me/foto")

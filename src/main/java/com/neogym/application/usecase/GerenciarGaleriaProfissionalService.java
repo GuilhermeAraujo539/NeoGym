@@ -3,6 +3,7 @@ package com.neogym.application.usecase;
 import com.neogym.application.dto.response.FotoGaleriaProfissionalConteudoResponse;
 import com.neogym.application.dto.response.FotoGaleriaProfissionalResponse;
 import com.neogym.application.port.in.GerenciarGaleriaProfissionalUseCase;
+import com.neogym.application.port.out.NutricionistaRepositoryPort;
 import com.neogym.application.port.out.PersonalFotoRepositoryPort;
 import com.neogym.application.port.out.PersonalRepositoryPort;
 import com.neogym.domain.entity.FotoGaleriaProfissional;
@@ -25,21 +26,23 @@ public class GerenciarGaleriaProfissionalService
 
     private final PersonalRepositoryPort personalRepository;
     private final PersonalFotoRepositoryPort fotoRepository;
+    private final NutricionistaRepositoryPort nutricionistaRepository;
 
     public GerenciarGaleriaProfissionalService(
             PersonalRepositoryPort personalRepository,
-            PersonalFotoRepositoryPort fotoRepository
-    ) {
+            PersonalFotoRepositoryPort fotoRepository,
+            NutricionistaRepositoryPort nutricionistaRepository) {
+
         this.personalRepository = personalRepository;
         this.fotoRepository = fotoRepository;
+        this.nutricionistaRepository = nutricionistaRepository;
     }
 
     @Override
     public List<FotoGaleriaProfissionalResponse> listar(Long usuarioId) {
-        var personal = buscarPersonal(usuarioId);
+        validarPerfilProfissional(usuarioId);
 
-        return fotoRepository
-                .listarPorPersonalId(personal.getId())
+        return fotoRepository.listarPorUsuarioId(usuarioId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -49,10 +52,91 @@ public class GerenciarGaleriaProfissionalService
     public FotoGaleriaProfissionalResponse adicionar(
             Long usuarioId,
             byte[] dados,
-            String contentType
-    ) {
-        var personal = buscarPersonal(usuarioId);
+            String contentType) {
 
+        validarPerfilProfissional(usuarioId);
+        validarImagem(dados, contentType);
+
+        long quantidade = fotoRepository.contarPorUsuarioId(usuarioId);
+
+        if (quantidade >= MAX_FOTOS) {
+            throw new IllegalStateException(
+                    "O limite de 8 fotos foi atingido."
+            );
+        }
+
+        String tipo = normalizarContentType(contentType);
+
+        var foto = new FotoGaleriaProfissional(
+                null,
+                usuarioId,
+                dados,
+                tipo,
+                LocalDateTime.now()
+        );
+
+        return toResponse(fotoRepository.salvar(foto));
+    }
+
+    @Override
+    public FotoGaleriaProfissionalConteudoResponse obterConteudo(
+            Long usuarioId,
+            Long fotoId) {
+
+        validarPerfilProfissional(usuarioId);
+
+        var foto = fotoRepository
+                .buscarPorIdEUsuarioId(fotoId, usuarioId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Foto não encontrada ou sem permissão."
+                        )
+                );
+
+        return new FotoGaleriaProfissionalConteudoResponse(
+                foto.getDados(),
+                foto.getContentType()
+        );
+    }
+
+    @Override
+    public void excluir(Long usuarioId, Long fotoId) {
+        validarPerfilProfissional(usuarioId);
+
+        fotoRepository
+                .buscarPorIdEUsuarioId(fotoId, usuarioId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Foto não encontrada ou sem permissão."
+                        )
+                );
+
+        fotoRepository.excluir(fotoId, usuarioId);
+    }
+
+    private void validarPerfilProfissional(Long usuarioId) {
+        if (usuarioId == null || usuarioId <= 0) {
+            throw new IllegalArgumentException(
+                    "Usuário inválido."
+            );
+        }
+
+        boolean ehPersonal = personalRepository
+                .buscarPorUsuarioId(usuarioId)
+                .isPresent();
+
+        boolean ehNutricionista = nutricionistaRepository
+                .buscarPorUsuarioId(usuarioId)
+                .isPresent();
+
+        if (!ehPersonal && !ehNutricionista) {
+            throw new IllegalArgumentException(
+                    "Perfil profissional não encontrado."
+            );
+        }
+    }
+
+    private void validarImagem(byte[] dados, String contentType) {
         if (dados == null || dados.length == 0) {
             throw new IllegalArgumentException(
                     "Selecione uma imagem válida."
@@ -65,86 +149,24 @@ public class GerenciarGaleriaProfissionalService
             );
         }
 
-        String tipo = contentType == null
-                ? ""
-                : contentType.toLowerCase(Locale.ROOT).trim();
+        String tipo = normalizarContentType(contentType);
 
         if (!TIPOS_PERMITIDOS.contains(tipo)) {
             throw new IllegalArgumentException(
                     "Formato não permitido. Utilize JPEG, PNG ou WebP."
             );
         }
-
-        if (fotoRepository.contarPorPersonalId(personal.getId())
-                >= MAX_FOTOS) {
-            throw new IllegalStateException(
-                    "O limite de 8 fotos foi atingido."
-            );
-        }
-
-        var foto = new FotoGaleriaProfissional(
-                null,
-                personal.getId(),
-                dados,
-                tipo,
-                LocalDateTime.now()
-        );
-
-        return toResponse(fotoRepository.salvar(foto));
     }
 
-    @Override
-    public FotoGaleriaProfissionalConteudoResponse obterConteudo(
-            Long usuarioId,
-            Long fotoId
-    ) {
-        var personal = buscarPersonal(usuarioId);
-
-        var foto = fotoRepository
-                .buscarPorIdEPersonalId(fotoId, personal.getId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Foto não encontrada."
-                        )
-                );
-
-        return new FotoGaleriaProfissionalConteudoResponse(
-                foto.getDados(),
-                foto.getContentType()
-        );
-    }
-
-    @Override
-    public void excluir(Long usuarioId, Long fotoId) {
-        var personal = buscarPersonal(usuarioId);
-
-        // A consulta confirma que a foto pertence ao personal autenticado.
-        fotoRepository
-                .buscarPorIdEPersonalId(fotoId, personal.getId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Foto não encontrada ou sem permissão."
-                        )
-                );
-
-        fotoRepository.excluir(fotoId);
-    }
-
-    private com.neogym.domain.entity.Personal buscarPersonal(
-            Long usuarioId
-    ) {
-        return personalRepository
-                .buscarPorUsuarioId(usuarioId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Perfil profissional não encontrado."
-                        )
-                );
+    private String normalizarContentType(String contentType) {
+        return contentType == null
+                ? ""
+                : contentType.toLowerCase(Locale.ROOT).trim();
     }
 
     private FotoGaleriaProfissionalResponse toResponse(
-            FotoGaleriaProfissional foto
-    ) {
+            FotoGaleriaProfissional foto) {
+
         return FotoGaleriaProfissionalResponse.builder()
                 .id(foto.getId())
                 .contentType(foto.getContentType())

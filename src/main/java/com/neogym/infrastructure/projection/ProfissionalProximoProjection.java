@@ -21,4 +21,8 @@ public interface ProfissionalProximoProjection {
     String getAreasAtuacao();
 
     String getHorariosDisponiveis();
+
+    Double getLat();
+
+    Double getLng();
 }

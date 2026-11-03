@@ -18,9 +18,9 @@ public class PersonalFotoJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "personal_id", nullable = false)
-    private PersonalJpaEntity personal;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UsuarioJpaEntity usuario;
 
     @Column(name = "dados", nullable = false, columnDefinition = "bytea")
     private byte[] dados;

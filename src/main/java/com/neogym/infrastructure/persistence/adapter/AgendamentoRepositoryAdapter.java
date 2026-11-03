@@ -21,17 +21,39 @@ public class AgendamentoRepositoryAdapter
     @Override
     public Agendamento salvar(Agendamento agendamento) {
 
-        AgendamentoJpaEntity entity =
-                new AgendamentoJpaEntity(
-                        agendamento.getAlunoId(),
-                        agendamento.getPersonalId(),
-                        agendamento.getNutricionistaId(),
-                        agendamento.getTitulo(),
-                        agendamento.getDescricao(),
-                        agendamento.getDataHora(),
-                        agendamento.getStatus(),
-                        agendamento.getCriadoEm()
-                );
+        AgendamentoJpaEntity entity;
+
+        if (agendamento.getId() == null) {
+            // Novo agendamento: cria um registro.
+            entity = new AgendamentoJpaEntity(
+                    agendamento.getAlunoId(),
+                    agendamento.getPersonalId(),
+                    agendamento.getNutricionistaId(),
+                    agendamento.getTitulo(),
+                    agendamento.getDescricao(),
+                    agendamento.getDataHora(),
+                    agendamento.getStatus(),
+                    agendamento.getCriadoEm()
+            );
+        } else {
+            // Agendamento existente: busca o registro original.
+            entity = repository.findById(agendamento.getId())
+                    .orElseThrow(() ->
+                            new RuntimeException("Agendamento não encontrado")
+                    );
+
+            // Atualiza os dados sem perder o ID original.
+            entity.atualizar(
+                    agendamento.getAlunoId(),
+                    agendamento.getPersonalId(),
+                    agendamento.getNutricionistaId(),
+                    agendamento.getTitulo(),
+                    agendamento.getDescricao(),
+                    agendamento.getDataHora(),
+                    agendamento.getStatus(),
+                    agendamento.getCriadoEm()
+            );
+        }
 
         return toDomain(repository.save(entity));
     }

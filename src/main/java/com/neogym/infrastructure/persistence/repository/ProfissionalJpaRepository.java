@@ -25,13 +25,12 @@ public interface ProfissionalJpaRepository
 
         ST_Distance(
             a.localizacao,
-            CAST(
-                ST_SetSRID(
-                    ST_MakePoint(:longitude, :latitude),
-                    4326
-                ) AS geography
-            )
-        ) / 1000.0 AS distanciaKm
+                CAST(
+                    ST_SetSRID(
+                        ST_MakePoint(:longitude, :latitude),
+                            4326) AS geography)) / 1000.0 AS distanciaKm, 
+                                 CAST(ST_Y(CAST(a.localizacao AS geometry)) AS double precision) AS lat,
+                                 CAST(ST_X(CAST(a.localizacao AS geometry)) AS double precision) AS lng
 
     FROM personal p
 

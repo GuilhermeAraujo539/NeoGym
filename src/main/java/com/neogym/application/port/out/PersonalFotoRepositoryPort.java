@@ -7,16 +7,16 @@ import java.util.Optional;
 
 public interface PersonalFotoRepositoryPort {
 
-    FotoGaleriaProfissional salvar(FotoGaleriaProfissional foto);
+    List<FotoGaleriaProfissional> listarPorUsuarioId(Long usuarioId);
 
-    List<FotoGaleriaProfissional> listarPorPersonalId(Long personalId);
+    long contarPorUsuarioId(Long usuarioId);
 
-    Optional<FotoGaleriaProfissional> buscarPorIdEPersonalId(
+    Optional<FotoGaleriaProfissional> buscarPorIdEUsuarioId(
             Long fotoId,
-            Long personalId
+            Long usuarioId
     );
 
-    long contarPorPersonalId(Long personalId);
+    FotoGaleriaProfissional salvar(FotoGaleriaProfissional foto);
 
-    void excluir(Long fotoId);
+    void excluir(Long fotoId, Long usuarioId);
 }

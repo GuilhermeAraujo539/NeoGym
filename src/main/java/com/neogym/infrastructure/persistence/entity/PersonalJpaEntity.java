@@ -3,6 +3,8 @@ package com.neogym.infrastructure.persistence.entity;
 import com.neogym.domain.enums.StatusCredencial;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "personal")
@@ -24,14 +26,8 @@ public class PersonalJpaEntity {
     private String estadoCref;
 
     @Enumerated(EnumType.STRING)
-    @org.hibernate.annotations.JdbcTypeCode(
-            org.hibernate.type.SqlTypes.NAMED_ENUM
-    )
-    @Column(
-            name = "status_cref",
-            nullable = false,
-            columnDefinition = "status_credencial"
-    )
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "status_cref", columnDefinition = "status_credencial")
     private StatusCredencial statusCref;
 
     @Column(name = "especialidade", nullable = false, length = 120)

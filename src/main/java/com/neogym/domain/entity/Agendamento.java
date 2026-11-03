@@ -75,4 +75,18 @@ public class Agendamento {
                 tipoProfissional
         );
     }
+
+    public void concluir() {
+        if (this.status == StatusAgendamento.CANCELADA) {
+            throw new IllegalStateException(
+                    "Não é possível concluir um agendamento cancelado"
+            );
+        }
+
+        if (this.status == StatusAgendamento.CONCLUIDA) {
+            return;
+        }
+
+        this.status = StatusAgendamento.CONCLUIDA;
+    }
 }

@@ -9,14 +9,14 @@ import java.util.Optional;
 public interface PersonalFotoJpaRepository
         extends JpaRepository<PersonalFotoJpaEntity, Long> {
 
-    List<PersonalFotoJpaEntity> findByPersonal_IdOrderByCriadoEmDesc(
-            Long personalId
-    );
+    List<PersonalFotoJpaEntity> findByUsuario_IdOrderByCriadoEmDesc(
+            Long usuarioId);
 
-    Optional<PersonalFotoJpaEntity> findByIdAndPersonal_Id(
+    Optional<PersonalFotoJpaEntity> findByIdAndUsuario_Id(
             Long fotoId,
-            Long personalId
-    );
+            Long usuarioId);
 
-    long countByPersonal_Id(Long personalId);
+    long countByUsuario_Id(Long usuarioId);
+
+    void deleteByIdAndUsuario_Id(Long fotoId, Long usuarioId);
 }

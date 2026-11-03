@@ -2,8 +2,8 @@ package com.neogym.application.usecase;
 
 import com.neogym.application.dto.response.ProfissionalProximoResponse;
 import com.neogym.application.port.in.BuscarProfissionaisProximosUseCase;
-import com.neogym.infrastructure.projection.ProfissionalProximoProjection;
 import com.neogym.application.port.out.ProfissionalRepositoryPort;
+import com.neogym.infrastructure.projection.ProfissionalProximoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +25,6 @@ public class BuscarProfissionaisProximosService
             int pagina,
             int tamanho
     ) {
-
         Pageable pageable = PageRequest.of(pagina, tamanho);
 
         return repository
@@ -50,6 +49,8 @@ public class BuscarProfissionaisProximosService
                 .distanciaKm(
                         Math.round(profissional.getDistanciaKm() * 100.0) / 100.0
                 )
+                .lat(profissional.getLat())
+                .lng(profissional.getLng())
                 .especialidade(profissional.getEspecialidade())
                 .apresentacao(profissional.getApresentacao())
                 .areasAtuacao(profissional.getAreasAtuacao())

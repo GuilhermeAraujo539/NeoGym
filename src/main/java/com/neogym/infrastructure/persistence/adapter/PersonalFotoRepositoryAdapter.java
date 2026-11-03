@@ -4,7 +4,7 @@ import com.neogym.application.port.out.PersonalFotoRepositoryPort;
 import com.neogym.domain.entity.FotoGaleriaProfissional;
 import com.neogym.infrastructure.persistence.entity.PersonalFotoJpaEntity;
 import com.neogym.infrastructure.persistence.repository.PersonalFotoJpaRepository;
-import com.neogym.infrastructure.persistence.repository.PersonalJpaRepository;
+import com.neogym.infrastructure.persistence.repository.UsuarioJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,18 +18,20 @@ public class PersonalFotoRepositoryAdapter
         implements PersonalFotoRepositoryPort {
 
     private final PersonalFotoJpaRepository fotoRepository;
-    private final PersonalJpaRepository personalRepository;
+    private final UsuarioJpaRepository usuarioRepository;
 
     @Override
     public FotoGaleriaProfissional salvar(FotoGaleriaProfissional foto) {
-        var personal = personalRepository.findById(foto.getPersonalId())
+        var usuario = usuarioRepository.findById(foto.getUsuarioId())
                 .orElseThrow(() ->
-                        new EntityNotFoundException("Personal não encontrado")
+                        new EntityNotFoundException(
+                                "Usuário proprietário da galeria não encontrado."
+                        )
                 );
 
         var entity = PersonalFotoJpaEntity.builder()
                 .id(foto.getId())
-                .personal(personal)
+                .usuario(usuario)
                 .dados(foto.getDados())
                 .contentType(foto.getContentType())
                 .criadoEm(foto.getCriadoEm())
@@ -39,41 +41,42 @@ public class PersonalFotoRepositoryAdapter
     }
 
     @Override
-    public List<FotoGaleriaProfissional> listarPorPersonalId(
-            Long personalId
-    ) {
+    public List<FotoGaleriaProfissional> listarPorUsuarioId(
+            Long usuarioId) {
+
         return fotoRepository
-                .findByPersonal_IdOrderByCriadoEmDesc(personalId)
+                .findByUsuario_IdOrderByCriadoEmDesc(usuarioId)
                 .stream()
                 .map(this::toDomain)
                 .toList();
     }
 
     @Override
-    public Optional<FotoGaleriaProfissional> buscarPorIdEPersonalId(
+    public Optional<FotoGaleriaProfissional> buscarPorIdEUsuarioId(
             Long fotoId,
-            Long personalId
-    ) {
-        return fotoRepository.findByIdAndPersonal_Id(fotoId, personalId)
+            Long usuarioId) {
+
+        return fotoRepository
+                .findByIdAndUsuario_Id(fotoId, usuarioId)
                 .map(this::toDomain);
     }
 
     @Override
-    public long contarPorPersonalId(Long personalId) {
-        return fotoRepository.countByPersonal_Id(personalId);
+    public long contarPorUsuarioId(Long usuarioId) {
+        return fotoRepository.countByUsuario_Id(usuarioId);
     }
 
     @Override
-    public void excluir(Long fotoId) {
-        fotoRepository.deleteById(fotoId);
+    public void excluir(Long fotoId, Long usuarioId) {
+        fotoRepository.deleteByIdAndUsuario_Id(fotoId, usuarioId);
     }
 
     private FotoGaleriaProfissional toDomain(
-            PersonalFotoJpaEntity entity
-    ) {
+            PersonalFotoJpaEntity entity) {
+
         return new FotoGaleriaProfissional(
                 entity.getId(),
-                entity.getPersonal().getId(),
+                entity.getUsuario().getId(),
                 entity.getDados(),
                 entity.getContentType(),
                 entity.getCriadoEm()

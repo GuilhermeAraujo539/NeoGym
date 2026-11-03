@@ -66,4 +66,25 @@ public class AgendamentoJpaEntity {
         this.status = status;
         this.criadoEm = criadoEm;
     }
+
+    public void atualizar(
+            Long alunoId,
+            Long personalId,
+            Long nutricionistaId,
+            String titulo,
+            String descricao,
+            LocalDateTime dataHora,
+            StatusAgendamento status,
+            LocalDateTime criadoEm
+    ) {
+        this.alunoId = alunoId;
+        this.personalId = personalId;
+        this.nutricionistaId = nutricionistaId;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.dataHora = dataHora;
+        this.status = status;
+        this.criadoEm = criadoEm;
+    }
+
 }

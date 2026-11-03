@@ -4,5 +4,10 @@ import com.neogym.application.dto.request.CadastrarNutricionistaRequest;
 import com.neogym.application.dto.response.NutricionistaResponse;
 
 public interface CadastrarNutricionistaUseCase {
-    NutricionistaResponse executar(CadastrarNutricionistaRequest request);
+
+    NutricionistaResponse executar(
+            CadastrarNutricionistaRequest req,
+            String arquivoIdentidade,
+            String arquivoProfissional
+    );
 }

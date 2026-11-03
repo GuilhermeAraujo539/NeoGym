@@ -3,11 +3,17 @@ package com.neogym.infrastructure.web.controller;
 import com.neogym.application.dto.request.*;
 import com.neogym.application.dto.response.*;
 import com.neogym.application.port.in.*;
+import com.neogym.infrastructure.storage.CredencialArquivoStorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -20,6 +26,7 @@ public class AuthController {
     private final LoginUseCase                  loginUseCase;
     private final RefreshTokenUseCase           refreshTokenUseCase;
     private final LogoutUseCase                 logoutUseCase;
+    private final CredencialArquivoStorageService credencialArquivoStorageService;
 
     @PostMapping("/cadastro/aluno")
     public ResponseEntity<AlunoResponse> cadastrarAluno(
@@ -28,18 +35,106 @@ public class AuthController {
                 .body(cadastrarAlunoUseCase.executar(request));
     }
 
-    @PostMapping("/cadastro/personal")
-    public ResponseEntity<PersonalResponse> cadastrarPersonal(
-            @Valid @RequestBody CadastrarPersonalRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(cadastrarPersonalUseCase.executar(request));
+    @PostMapping(
+            value = "/cadastro/personal",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<?> cadastrarPersonal(
+            @Valid @RequestPart("dados") CadastrarPersonalRequest request,
+            @RequestPart("documentoIdentidade") MultipartFile identidade,
+            @RequestPart("documentoProfissional") MultipartFile documento
+    ) throws IOException {
+
+        String arquivoIdentidade = null;
+        String arquivoProfissional = null;
+
+        try {
+            arquivoIdentidade =
+                    credencialArquivoStorageService.salvar(identidade);
+
+            arquivoProfissional =
+                    credencialArquivoStorageService.salvar(documento);
+
+            PersonalResponse resposta =
+                    cadastrarPersonalUseCase.executar(
+                            request,
+                            arquivoIdentidade,
+                            arquivoProfissional
+                    );
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
+
+        } catch (IllegalArgumentException e) {
+            excluirArquivoSeExistir(arquivoIdentidade);
+            excluirArquivoSeExistir(arquivoProfissional);
+
+            return ResponseEntity.badRequest().body(
+                    Map.of("message", e.getMessage())
+            );
+
+        } catch (IOException | RuntimeException e) {
+            excluirArquivoSeExistir(arquivoIdentidade);
+            excluirArquivoSeExistir(arquivoProfissional);
+
+            throw e;
+        }
     }
 
-    @PostMapping("/cadastro/nutricionista")
-    public ResponseEntity<NutricionistaResponse> cadastrarNutricionista(
-            @Valid @RequestBody CadastrarNutricionistaRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(cadastrarNutricionistaUseCase.executar(request));
+    @PostMapping(
+            value = "/cadastro/nutricionista",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<?> cadastrarNutricionista(
+            @Valid @RequestPart("dados") CadastrarNutricionistaRequest request,
+            @RequestPart("documentoIdentidade") MultipartFile identidade,
+            @RequestPart("documentoProfissional") MultipartFile documento
+    ) throws IOException {
+
+        String arquivoIdentidade = null;
+        String arquivoProfissional = null;
+
+        try {
+            arquivoIdentidade =
+                    credencialArquivoStorageService.salvar(identidade);
+
+            arquivoProfissional =
+                    credencialArquivoStorageService.salvar(documento);
+
+            NutricionistaResponse resposta =
+                    cadastrarNutricionistaUseCase.executar(
+                            request,
+                            arquivoIdentidade,
+                            arquivoProfissional
+                    );
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
+
+        } catch (IllegalArgumentException e) {
+            excluirArquivoSeExistir(arquivoIdentidade);
+            excluirArquivoSeExistir(arquivoProfissional);
+
+            return ResponseEntity.badRequest().body(
+                    Map.of("message", e.getMessage())
+            );
+
+        } catch (IOException | RuntimeException e) {
+            excluirArquivoSeExistir(arquivoIdentidade);
+            excluirArquivoSeExistir(arquivoProfissional);
+
+            throw e;
+        }
+    }
+
+    private void excluirArquivoSeExistir(String nomeArquivo) {
+        if (nomeArquivo == null || nomeArquivo.isBlank()) {
+            return;
+        }
+
+        try {
+            credencialArquivoStorageService.excluir(nomeArquivo);
+        } catch (IOException ignored) {
+            // Não substitui a exceção original caso a limpeza falhe.
+        }
     }
 
     @PostMapping("/login")

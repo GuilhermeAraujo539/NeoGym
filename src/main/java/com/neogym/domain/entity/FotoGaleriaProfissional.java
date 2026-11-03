@@ -4,21 +4,21 @@ import java.time.LocalDateTime;
 
 public class FotoGaleriaProfissional {
 
-    private final Long id;
-    private final Long personalId;
-    private final byte[] dados;
-    private final String contentType;
-    private final LocalDateTime criadoEm;
+    private Long id;
+    private Long usuarioId;
+    private byte[] dados;
+    private String contentType;
+    private LocalDateTime criadoEm;
 
     public FotoGaleriaProfissional(
             Long id,
-            Long personalId,
+            Long usuarioId,
             byte[] dados,
             String contentType,
             LocalDateTime criadoEm
     ) {
         this.id = id;
-        this.personalId = personalId;
+        this.usuarioId = usuarioId;
         this.dados = dados;
         this.contentType = contentType;
         this.criadoEm = criadoEm;
@@ -28,8 +28,8 @@ public class FotoGaleriaProfissional {
         return id;
     }
 
-    public Long getPersonalId() {
-        return personalId;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
     public byte[] getDados() {

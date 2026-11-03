@@ -3,14 +3,17 @@ package com.neogym.application.usecase;
 import com.neogym.application.dto.request.CadastrarPersonalRequest;
 import com.neogym.application.dto.response.PersonalResponse;
 import com.neogym.application.port.in.CadastrarPersonalUseCase;
+import com.neogym.application.port.out.CredencialRepositoryPort;
 import com.neogym.application.port.out.PasswordEncoderPort;
 import com.neogym.application.port.out.PersonalRepositoryPort;
 import com.neogym.application.port.out.UsuarioRepositoryPort;
+import com.neogym.domain.entity.Credencial;
 import com.neogym.domain.entity.Personal;
 import com.neogym.domain.entity.Usuario;
 import com.neogym.domain.enums.StatusCredencial;
 import com.neogym.domain.enums.TipoUsuario;
 import com.neogym.domain.exception.UsuarioJaExisteException;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -19,18 +22,27 @@ public class CadastrarPersonalService implements CadastrarPersonalUseCase {
     private final UsuarioRepositoryPort  usuarioRepository;
     private final PersonalRepositoryPort personalRepository;
     private final PasswordEncoderPort    passwordEncoder;
+    private final CredencialRepositoryPort credencialRepository;
 
     public CadastrarPersonalService(
-            UsuarioRepositoryPort  usuarioRepository,
+            UsuarioRepositoryPort usuarioRepository,
             PersonalRepositoryPort personalRepository,
-            PasswordEncoderPort    passwordEncoder) {
-        this.usuarioRepository  = usuarioRepository;
+            PasswordEncoderPort passwordEncoder,
+            CredencialRepositoryPort credencialRepository) {
+
+        this.usuarioRepository = usuarioRepository;
         this.personalRepository = personalRepository;
-        this.passwordEncoder    = passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
+        this.credencialRepository = credencialRepository;
     }
 
     @Override
-    public PersonalResponse executar(CadastrarPersonalRequest req) {
+    @Transactional
+    public PersonalResponse executar(
+            CadastrarPersonalRequest req,
+            String arquivoIdentidade,
+            String arquivoProfissional) {
+
         String email = req.getEmail().toLowerCase().strip();
 
         if (usuarioRepository.existePorEmail(email)) {
@@ -51,11 +63,23 @@ public class CadastrarPersonalService implements CadastrarPersonalUseCase {
         Personal personal = Personal.builder()
                 .usuarioId(salvo.getId())
                 .cref(req.getCref().toUpperCase().strip())
-                .estadoCref(req.getEstadoCref().toUpperCase())
+                .estadoCref(req.getEstadoCref().toUpperCase().strip())
                 .statusCref(StatusCredencial.PENDENTE)
                 .build();
 
         Personal personalSalvo = personalRepository.salvar(personal);
+
+        // Registra os documentos para análise administrativa.
+        Credencial credencial = Credencial.builder()
+                .usuarioId(salvo.getId())
+                .tipo("CREF")
+                .arquivoUrl(arquivoProfissional)
+                .arquivoIdentidadeUrl(arquivoIdentidade)
+                .status(StatusCredencial.PENDENTE)
+                .criadoEm(LocalDateTime.now())
+                .build();
+
+        credencialRepository.salvar(credencial);
 
         return PersonalResponse.builder()
                 .id(personalSalvo.getId())

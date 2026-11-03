@@ -5,11 +5,19 @@ import com.neogym.application.dto.response.CredenciaisAdminPaginaResponse;
 import com.neogym.application.port.in.GerenciarCredenciaisAdminUseCase;
 import com.neogym.application.port.out.CredenciaisAdminPort;
 
+import com.neogym.application.port.out.CredencialRepositoryPort;
+import com.neogym.infrastructure.storage.CredencialArquivoStorageService;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,11 +38,17 @@ public class CredenciaisAdminController {
     );
 
     private final GerenciarCredenciaisAdminUseCase useCase;
+    private final CredencialRepositoryPort credencialRepository;
+    private final CredencialArquivoStorageService arquivoStorage;
 
     public CredenciaisAdminController(
-            GerenciarCredenciaisAdminUseCase useCase
+            GerenciarCredenciaisAdminUseCase useCase,
+            CredencialRepositoryPort credencialRepository,
+            CredencialArquivoStorageService arquivoStorage
     ) {
         this.useCase = useCase;
+        this.credencialRepository = credencialRepository;
+        this.arquivoStorage = arquivoStorage;
     }
 
     @GetMapping
@@ -132,5 +146,53 @@ public class CredenciaisAdminController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping("/{id}/arquivo")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<byte[]> obterArquivo(
+            @PathVariable Long id,
+            @RequestParam String tipo) throws IOException {
+
+        if (!tipo.equalsIgnoreCase("IDENTIDADE")
+                && !tipo.equalsIgnoreCase("PROFISSIONAL")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Tipo de documento inválido."
+            );
+        }
+
+        String nomeArquivo = credencialRepository
+                .buscarNomeArquivo(id, tipo)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Documento não encontrado."
+                ));
+
+        Path caminho = arquivoStorage.obterCaminho(nomeArquivo);
+
+        if (!Files.isRegularFile(caminho)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Arquivo não encontrado no armazenamento."
+            );
+        }
+
+        String contentType = Files.probeContentType(caminho);
+
+        if (contentType == null
+                || !(contentType.equals("image/jpeg")
+                || contentType.equals("image/png"))) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                    "Formato de imagem não suportado."
+            );
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .cacheControl(CacheControl.noStore())
+                .body(Files.readAllBytes(caminho));
     }
 }

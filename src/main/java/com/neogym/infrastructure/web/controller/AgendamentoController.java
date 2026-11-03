@@ -2,6 +2,7 @@ package com.neogym.infrastructure.web.controller;
 
 import com.neogym.application.dto.request.CriarAgendamentoRequest;
 import com.neogym.application.dto.response.AgendamentoResponse;
+import com.neogym.application.port.in.ConcluirAgendamentoUseCase;
 import com.neogym.application.port.in.CriarAgendamentoUseCase;
 import com.neogym.application.port.in.ExcluirAgendamentoUseCase;
 import com.neogym.application.port.in.ListarMeusAgendamentosUseCase;
@@ -25,6 +26,7 @@ public class AgendamentoController {
     private final CriarAgendamentoUseCase criarAgendamentoUseCase;
     private final ListarMeusAgendamentosUseCase listarMeusAgendamentosUseCase;
     private final ExcluirAgendamentoUseCase excluirAgendamentoUseCase;
+    private final ConcluirAgendamentoUseCase concluirAgendamentoUseCase;
 
     @PostMapping
     public ResponseEntity<AgendamentoResponse> criar(
@@ -75,6 +77,46 @@ public class AgendamentoController {
                 );
 
         excluirAgendamentoUseCase.executar(
+                usuario.getUsuarioId(),
+                tipoUsuario,
+                id
+        );
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/concluir")
+    public ResponseEntity<Void> concluir(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        boolean ehProfissional = authentication.getAuthorities()
+                .stream()
+                .anyMatch(a ->
+                        "ROLE_PERSONAL".equals(a.getAuthority())
+                                || "ROLE_NUTRICIONISTA".equals(a.getAuthority())
+                );
+
+        if (!ehProfissional) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        AuthenticatedUser usuario =
+                (AuthenticatedUser) authentication.getPrincipal();
+
+        String tipoUsuario = authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(tipo ->
+                        "ROLE_PERSONAL".equals(tipo)
+                                || "ROLE_NUTRICIONISTA".equals(tipo)
+                )
+                .findFirst()
+                .orElseThrow(() ->
+                        new RuntimeException("Tipo de usuário não identificado")
+                );
+
+        concluirAgendamentoUseCase.executar(
                 usuario.getUsuarioId(),
                 tipoUsuario,
                 id

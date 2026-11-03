@@ -11,23 +11,28 @@ public class NutricionistaMapper {
 
     public Nutricionista toDomain(NutricionistaJpaEntity e) {
         if (e == null) return null;
+
         return Nutricionista.builder()
                 .id(e.getId())
                 .usuarioId(e.getUsuario().getId())
                 .crn(e.getCrn())
                 .estadoCrn(e.getEstadoCrn())
-                .statusCrn(StatusCredencial.valueOf(e.getStatusCrn()))
+                .statusCrn(e.getStatusCrn())
                 .build();
     }
 
-    public NutricionistaJpaEntity toEntity(Nutricionista d, UsuarioJpaEntity usuario) {
+    public NutricionistaJpaEntity toEntity(
+            Nutricionista d,
+            UsuarioJpaEntity usuario) {
+
         if (d == null) return null;
+
         return NutricionistaJpaEntity.builder()
                 .id(d.getId())
                 .usuario(usuario)
                 .crn(d.getCrn())
                 .estadoCrn(d.getEstadoCrn())
-                .statusCrn(d.getStatusCrn().name())
+                .statusCrn(d.getStatusCrn())
                 .build();
     }
 }
